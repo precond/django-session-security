@@ -30,18 +30,18 @@ yourlabs.SessionSecurity = function(options) {
 
     // Bind activity events to update this.lastActivity.
     for(var i=0; i<this.events.length; i++) {
-        $(document)[this.events[i]]($.proxy(this.activity, this))
+        $(document)[this.events[i]]($.proxy(this.activity, this));
     }
    
     // Initialize timers.
-    this.apply()
+    this.apply();
 
     if (this.confirmFormDiscard) {
         window.onbeforeunload = $.proxy(this.onbeforeunload, this);
         $(document).on('change', ':input', $.proxy(this.formChange, this));
         $(document).on('submit', 'form', $.proxy(this.formSubmit, this));
     }
-}
+};
 
 yourlabs.SessionSecurity.prototype = {
     // Called when there has been no activity for more than expireAfter
@@ -137,4 +137,4 @@ yourlabs.SessionSecurity.prototype = {
     formSubmit: function(e) {
         $(e.target).removeAttr('data-dirty');
     }
-}
+};

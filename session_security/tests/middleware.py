@@ -45,3 +45,26 @@ class MiddlewareTestCase(unittest.TestCase):
         time.sleep(4)
         response = self.client.get('/admin/')
         self.assertTrue('_auth_user_id' in self.client.session)
+
+    def test_lock_unlock_session(self):
+        self.client.login(username='test', password='test')
+        response = self.client.get('/session_security/lock/')
+        self.assertTrue('_session_locked' in self.client.session)
+        response = self.client.post('/session_security/lock/', {'session_security_password':'test'})
+        self.assertFalse('_session_locked' in self.client.session)
+        response = self.client.get('/admin/')
+        self.assertTrue('_auth_user_id' in self.client.session)
+
+    def test_lock_session_browse_logout(self):
+        self.client.login(username='test', password='test')
+        response = self.client.get('/session_security/lock/')
+        self.assertTrue('_session_locked' in self.client.session)
+        response = self.client.get('/admin/')
+        self.assertFalse('_auth_user_id' in self.client.session)
+
+    def test_lock_unlock_session_wrong_password(self):
+        self.client.login(username='test', password='test')
+        response = self.client.get('/session_security/lock/')
+        self.assertTrue('_session_locked' in self.client.session)
+        response = self.client.post('/session_security/lock/', {'session_security_password':'foo'})
+        self.assertTrue('_session_locked' in self.client.session)

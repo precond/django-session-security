@@ -22,6 +22,9 @@ yourlabs.SessionSecurity = function(options) {
     // Last recorded activity datetime.
     this.lastActivity = new Date();
 
+    // Unlocked initially
+    this.locked = false;
+
     // Events that would trigger an activity
     this.events = ['mousemove', 'scroll', 'keyup', 'click'];
    
@@ -41,6 +44,16 @@ yourlabs.SessionSecurity = function(options) {
         $(document).on('change', ':input', $.proxy(this.formChange, this));
         $(document).on('submit', 'form', $.proxy(this.formSubmit, this));
     }
+
+    if (this.warnLock) {
+        $('#session_security_password_submit').on('click', $.proxy(this.unlock, this));
+        $('#session_security_password').on('keyup', $.proxy(function(event) {
+            if (event.which == 13) {
+                event.preventDefault();
+                this.unlock();
+            }
+        }, this));
+    }
 };
 
 yourlabs.SessionSecurity.prototype = {
@@ -55,6 +68,10 @@ yourlabs.SessionSecurity.prototype = {
     // seconds.
     showWarning: function() {
         this.$warning.fadeIn('slow');
+        if (this.warnLock) {
+            this.lock();
+            $('#session_security_password').focus();
+        }
     },
     
     // Called to hide the warning, for example if there has been activity on
@@ -65,15 +82,18 @@ yourlabs.SessionSecurity.prototype = {
 
     // Called by click, scroll, mousemove, keyup.
     activity: function() {
-        this.lastActivity = new Date();
+        // Activity does not count if UI is locked
+        if (!this.locked) {
+            this.lastActivity = new Date();
 
-        if (this.$warning.is(':visible')) {
-            // Inform the server that the user came back manually, this should
-            // block other browser tabs from expiring.
-            this.ping();
+            if (this.$warning.is(':visible')) {
+                // Inform the server that the user came back manually, this should
+                // block other browser tabs from expiring.
+                this.ping();
+            }
+
+            this.hideWarning();
         }
-
-        this.hideWarning();
     },
 
     // Hit the PingView with the number of seconds since last activity.
@@ -99,6 +119,69 @@ yourlabs.SessionSecurity.prototype = {
         this.lastActivity = new Date();
         this.lastActivity.setSeconds(this.lastActivity.getSeconds() - data);
         this.apply();
+    },
+
+    // Hit the LockView to lock the session.
+    lock: function() {
+        if (!this.locked) {
+            this.locked = true;
+            $.ajax(this.lockUrl, {
+                data: {},
+                cache: false,
+                success: $.proxy(this.locked_cb, this),
+                // In case of network error, we still want to hide potentially
+                // confidential data !!
+                error: $.proxy(this.apply, this),
+                dataType: 'text',
+                type: 'get'
+            });
+        }
+    },
+
+    // Callback to process lock response
+    locked_cb: function(data) {
+        if (data == 'logout') return this.expire();
+        if (data == 'unlocked') {
+            // Just in case the view decides not to lock the session
+            this.locked = false;
+            this.lastActivity = new Date();
+            this.apply();
+        }
+    },
+
+    // Hit the LockView to unlock the session.
+    unlock: function() {
+        var data = {
+            'session_security_password': $('#session_security_password').val()
+        };
+        $('#session_security_password').val('');
+
+        // Make sure to post also the Django CSRF token if it seems to be present
+        var csrftoken = this.getCookie('csrftoken');
+        if (csrftoken) {
+            data.csrfmiddlewaretoken = csrftoken;
+        }
+
+        $.ajax(this.lockUrl, {
+            data: data,
+            cache: false,
+            success: $.proxy(this.unlocked, this),
+            // In case of network error, we still want to hide potentially
+            // confidential data !!
+            error: $.proxy(this.apply, this),
+            dataType: 'text',
+            type: 'post'
+        });
+    },
+
+    // Callback to process unlock response
+    unlocked: function(data) {
+      if (data == 'logout') return this.expire();
+      if (data == 'unlocked') {
+          this.locked = false;
+          this.lastActivity = new Date();
+          this.apply();
+      }
     },
 
     // Apply warning or expiry, setup next ping
@@ -136,5 +219,22 @@ yourlabs.SessionSecurity.prototype = {
     // When a form is submited, unset data-dirty attribute.
     formSubmit: function(e) {
         $(e.target).removeAttr('data-dirty');
+    },
+
+    // Plucked from the Django documentation
+    getCookie: function(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 };

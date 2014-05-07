@@ -1,6 +1,6 @@
 from django import template
 
-from session_security.settings import WARN_AFTER, EXPIRE_AFTER
+from session_security.settings import WARN_AFTER, EXPIRE_AFTER, WARN_LOCK
 
 register = template.Library()
 
@@ -13,3 +13,12 @@ def expire_after(request):
 @register.filter
 def warn_after(request):
     return WARN_AFTER
+
+
+@register.filter
+def warn_lock(request):
+    # Return Javascript boolean value instead of Python value
+    if WARN_LOCK:
+        return 'true'
+    else:
+        return 'false'

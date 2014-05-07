@@ -16,7 +16,7 @@ from django import http
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 
-from .utils import get_last_activity, set_last_activity
+from .utils import get_last_activity, set_last_activity, is_locked
 from .settings import EXPIRE_AFTER, PASSIVE_URLS
 
 
@@ -38,7 +38,11 @@ class SessionSecurityMiddleware(object):
         if delta >= timedelta(seconds=EXPIRE_AFTER):
             logout(request)
         elif request.path not in PASSIVE_URLS:
-            set_last_activity(request.session, now)
+            # If session is locked, do not allow other than passive URLs
+            if is_locked(request.session):
+                logout(request)
+            else:
+                set_last_activity(request.session, now)
 
     def update_last_activity(self, request, now):
         """

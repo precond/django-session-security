@@ -24,3 +24,12 @@
     overflow: auto;
     text-align: center;
 }
+
+#session_security_password_label {
+    font-size: 120%;
+    padding-right: 10px;
+}
+
+#session_security_password_submit {
+    margin-left: 10px;
+}

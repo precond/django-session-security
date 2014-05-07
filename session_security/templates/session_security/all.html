@@ -28,8 +28,10 @@ It provides sensible defaults so you could start with just::
         <script type="text/javascript">
             var sessionSecurity = new yourlabs.SessionSecurity({
                 pingUrl: '{% url 'session_security_ping' %}',
+                lockUrl: '{% url 'session_security_lock' %}',
                 warnAfter: {{ request|warn_after|unlocalize }},
                 expireAfter: {{ request|expire_after|unlocalize }},
+                warnLock: {{ request|warn_lock }},
                 confirmFormDiscard: "{% trans 'You have unsaved changes in a form of this page.' %}"
             });
         </script>

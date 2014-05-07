@@ -19,12 +19,17 @@ try:
 except ImportError:
     from django.conf.urls.defaults import url, patterns
 
-from .views import PingView
+from .views import PingView, LockView
 
 urlpatterns = patterns('',
     url(
         'ping/$',
         PingView.as_view(),
         name='session_security_ping',
+    ),
+    url(
+        'lock/$',
+        LockView.as_view(),
+        name='session_security_lock',
     ),
 )

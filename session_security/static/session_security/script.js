@@ -46,7 +46,7 @@ yourlabs.SessionSecurity = function(options) {
     }
 
     if (this.warnLock) {
-        $('#session_security_warning form').on('submit', $.proxy(function(event) {
+        $('#session_security_form').on('submit', $.proxy(function(event) {
             event.preventDefault();
             this.unlock();
         }, this));

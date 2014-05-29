@@ -46,12 +46,9 @@ yourlabs.SessionSecurity = function(options) {
     }
 
     if (this.warnLock) {
-        $('#session_security_password_submit').on('click', $.proxy(this.unlock, this));
-        $('#session_security_password').on('keyup', $.proxy(function(event) {
-            if (event.which == 13) {
-                event.preventDefault();
-                this.unlock();
-            }
+        $('#session_security_warning form').on('submit', $.proxy(function(event) {
+            event.preventDefault();
+            this.unlock();
         }, this));
     }
 };

@@ -7,9 +7,11 @@
         {% if request|warn_lock == 'true' %}
             <h3>{% trans 'Your session is locked' %}</h3>
             <p>{% trans 'Input password to unlock' %}</p>
+            <form>
             <label id="session_security_password_label" for="session_security_password">Password</label>
             <input id="session_security_password" name="session_security_password" type="password" />
             <button id="session_security_password_submit">Unlock</button>
+            </form>
         {% else %}
             <h3>{% trans 'Your session is about to expire' %}</h3>
             <p>{% trans 'Click to extend your session.' %}</p>

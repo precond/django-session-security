@@ -67,6 +67,9 @@ yourlabs.SessionSecurity.prototype = {
         this.$warning.fadeIn('slow');
         if (this.warnLock) {
             this.lock();
+            $('#session_security_password').on('focusout', function() {
+                $('#session_security_password').focus();
+            });
             $('#session_security_password').focus();
         }
     },
@@ -74,6 +77,7 @@ yourlabs.SessionSecurity.prototype = {
     // Called to hide the warning, for example if there has been activity on
     // the server side - in another browser tab.
     hideWarning: function() {
+        $('#session_security_password').off('focusout');
         this.$warning.hide();
     },
 

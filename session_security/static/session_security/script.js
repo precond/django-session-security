@@ -144,7 +144,7 @@ yourlabs.SessionSecurity.prototype = {
                 // In case of network error, we still want to hide potentially
                 // confidential data !!
                 error: $.proxy(this.apply, this),
-                dataType: 'text',
+                dataType: 'json',
                 type: 'get'
             });
         }
@@ -181,7 +181,7 @@ yourlabs.SessionSecurity.prototype = {
             // In case of network error, we still want to hide potentially
             // confidential data !!
             error: $.proxy(this.apply, this),
-            dataType: 'text',
+            dataType: 'json',
             type: 'post'
         });
     },

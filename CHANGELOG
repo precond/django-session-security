@@ -1,3 +1,17 @@
+2.3.2
+
+    - #58: Allow for custom expiration based on request (#65) by @mjschultz
+
+2.3.1
+
+    - #57: added redirectTo parameter to the script by Andrei Coman
+    - test stabilization with django-sbo-selenium
+    - Django 1.10 support
+
+2.3.0 Deprecate support for Django < 1.6
+
+2.2.5 #56: Dj19 support by @eriktelepovsky
+
 2.2.4 #43: Throttle lastActivity updates to once per second by @cuu508
 
 2.2.3 #31: Removed a .mo file

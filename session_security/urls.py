@@ -15,13 +15,13 @@ ie::
 
 """
 try:
-    from django.conf.urls import url, patterns
+    from django.conf.urls import url
 except ImportError:
-    from django.conf.urls.defaults import url, patterns
+    from django.conf.urls.defaults import url
 
 from .views import PingView, LockView
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(
         'ping/$',
         PingView.as_view(),
@@ -31,5 +31,5 @@ urlpatterns = patterns('',
         'lock/$',
         LockView.as_view(),
         name='session_security_lock',
-    ),
-)
+    )
+]

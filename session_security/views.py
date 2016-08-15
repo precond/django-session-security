@@ -21,11 +21,13 @@ class PingView(generic.View):
     def get(self, request, *args, **kwargs):
         if '_session_security' not in request.session:
             # It probably has expired already
-            return http.HttpResponse('logout')
+            return http.HttpResponse('"logout"',
+                                     content_type='application/json')
 
         last_activity = get_last_activity(request.session)
         inactive_for = (datetime.now() - last_activity).seconds
-        return http.HttpResponse(inactive_for)
+        return http.HttpResponse(inactive_for,
+                                 content_type='application/json')
 
 
 class LockView(generic.View):
@@ -40,10 +42,12 @@ class LockView(generic.View):
         """
         if '_session_security' not in request.session:
             # It probably has expired already
-            return http.HttpResponse('logout')
+            return http.HttpResponse('"logout"',
+                                     content_type='application/json')
 
         lock_session(request.session)
-        return http.HttpResponse('locked')
+        return http.HttpResponse('"locked"',
+                                 content_type='application/json')
 
     def post(self, request, *args, **kwargs):
         """
@@ -52,11 +56,14 @@ class LockView(generic.View):
         """
         if '_session_security' not in request.session:
             # It probably has expired already
-            return http.HttpResponse('logout')
+            return http.HttpResponse('"logout"',
+                                     content_type='application/json')
 
         password = request.POST.get('session_security_password', None)
         if request.user.is_authenticated() and request.user.check_password(password):
             unlock_session(request.session)
-            return http.HttpResponse('unlocked')
+            return http.HttpResponse('"unlocked"',
+                                     content_type='application/json')
 
-        return http.HttpResponse('locked')
+        return http.HttpResponse('"locked"',
+                                 content_type='application/json')

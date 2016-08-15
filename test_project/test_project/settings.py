@@ -27,8 +27,6 @@ DATABASES = {
     }
 }
 
-TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -147,6 +145,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     'session_security',
+    'sbo_selenium',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
